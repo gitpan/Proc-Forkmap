@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 sub new {
@@ -116,7 +116,7 @@ EXAMPLES:
     my $p = Proc::Forkmap->new;
     my @rs = $p->fmap(\&foo,@x);
     
-or,
+    or,
     
     package Foo;
     
@@ -130,11 +130,11 @@ or,
         sub { $foo->bar(@_) }, @x,
     );
     
-or,
+    or,
     
     my @rs = $p->fmap(sub { $_[0] ** $_[0] }, @x);
     
-or,
+    or,
     
     #get stuff from the intertubes
     
@@ -177,11 +177,7 @@ Maximum number of kids allowed in the pool. The default is 2.
 
 =item B<ipc>
 
-    1 = IPC on.
-    
-    0 = IPC off.
-
-IPC is on by default.
+Set IPC on/off state. IPC is on by default.
 
 =back
 

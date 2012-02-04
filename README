@@ -14,7 +14,7 @@ EXAMPLES:
     my $p = Proc::Forkmap->new;
     my @rs = $p->fmap(\&foo,@x);
     
-or,
+    or,
     
     package Foo;
     
@@ -28,11 +28,11 @@ or,
         sub { $foo->bar(@_) }, @x,
     );
     
-or,
+    or,
     
     my @rs = $p->fmap(sub { $_[0] ** $_[0] }, @x);
     
-or,
+    or,
     
     #get stuff from the intertubes
     
