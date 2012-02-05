@@ -7,18 +7,18 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = '0.02';
+our $VERSION = '0.021';
 
 
 sub new {
     my $class = shift;
     my $self = bless {@_}, $class;
-    $self->init;
+    $self->_init;
     return $self;
 }
 
 
-sub init {
+sub _init {
     my $self = shift;
     ($self->{max_kids} //= 2) =~ /^[1-9]+$/
         or croak "max_kids value error";
