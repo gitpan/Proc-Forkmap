@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = '0.021';
+our $VERSION = '0.022';
 
 
 sub new {
@@ -22,7 +22,7 @@ sub _init {
     my $self = shift;
     ($self->{max_kids} //= 2) =~ /^[1-9]+$/
         or croak "max_kids value error";
-    $self->{ipc} //= 1; #ipc on by default        
+    $self->{ipc} //= 0; #ipc off by default        
 }                          
 
 
@@ -49,7 +49,7 @@ sub fmap {
     my $max = $self->max_kids;
     my $ipc = $self->ipc;
     for my $proc (@_) {
-        my $pipe = IO::Pipe->new if $ipc; #put this in your pipe, and smoke it
+        my $pipe = $ipc ? IO::Pipe->new : {}; #put this in your pipe, and smoke it
         #max kids?
         while ($max == keys %pids) {
             #free a spot in queue when a process completes
@@ -109,24 +109,24 @@ EXAMPLES:
     sub foo {
         my ($x,$n) = (shift,1);
         $n *= $_ for (@$x);
-        return $n;
+        say $n;
     }
     
     @x = ([1..99],[100..199],[200..299]);
     my $p = Proc::Forkmap->new;
-    my @rs = $p->fmap(\&foo,@x);
+    $p->fmap(\&foo,@x);
     
     or,
     
     package Foo;
     
     sub new { return bless {}, shift};
-    sub bar { #do heavy calc stuff and max the CPU };
+    sub bar { #do heavy calc stuff and max a CPU };
     
     package main;
     
     my $foo = Foo->new;
-    my @rs = Proc::Forkmap->new(max_kids => 5)->fmap(
+    my @rs = Proc::Forkmap->new(max_kids => 4, ipc=> 1)->fmap(
         sub { $foo->bar(@_) }, @x,
     );
     
@@ -156,7 +156,7 @@ EXAMPLES:
        $conn->disconnect;
     }
     
-    my $p = Proc::Forkmap->new(max_kids => 5, ipc => 0); # turn off IPC
+    my $p = Proc::Forkmap->new(max_kids => 4);
     $p->fmap(\&bar,qw/rht goog ^ixic ^dji yhoo aapl/);
 
 =head1 DESCRIPTION
@@ -167,7 +167,7 @@ This module supplies an easy to use map method that provides built-in forking an
 
 =head2 new
 
-    my $p = Proc::Forkmap->new(max_kids => 5, ipc => 0);
+    my $p = Proc::Forkmap->new(max_kids => 4, ipc => 1);
 
 =over 4
 
@@ -177,19 +177,19 @@ Maximum number of kids allowed in the pool. The default is 2.
 
 =item B<ipc>
 
-Set IPC on/off state. IPC is on by default.
+Set IPC on (blocking)/off state. IPC is off by default.
 
 =back
 
 =head2 icp
 
-    $p->ipc(0)
+    $p->ipc(1)
 
 Turn on/off inter-process communication.
 
 =head2 max_kids
 
-    $p->max_kids(5);
+    $p->max_kids(4);
 
 max_kids setter/getter.
 

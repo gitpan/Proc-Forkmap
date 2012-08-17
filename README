@@ -7,30 +7,12 @@ EXAMPLES:
     sub foo {
         my ($x,$n) = (shift,1);
         $n *= $_ for (@$x);
-        return $n;
+        say $n;
     }
     
     @x = ([1..99],[100..199],[200..299]);
     my $p = Proc::Forkmap->new;
-    my @rs = $p->fmap(\&foo,@x);
-    
-    or,
-    
-    package Foo;
-    
-    sub new { return bless {}, shift};
-    sub bar { #do heavy calc stuff and max the CPU };
-    
-    package main;
-    
-    my $foo = Foo->new;
-    my @rs = Proc::Forkmap->new(max_kids => 5)->fmap(
-        sub { $foo->bar(@_) }, @x,
-    );
-    
-    or,
-    
-    my @rs = $p->fmap(sub { $_[0] ** $_[0] }, @x);
+    $p->fmap(\&foo,@x);
     
     or,
     
@@ -55,7 +37,7 @@ EXAMPLES:
        $conn->disconnect;
     }
     
-    my $p = Proc::Forkmap->new(max_kids => 5, ipc => 0); # turn off IPC
+    my $p = Proc::Forkmap->new(max_kids => 4);
     $p->fmap(\&bar,qw/rht goog ^ixic ^dji yhoo aapl/);
 
 
